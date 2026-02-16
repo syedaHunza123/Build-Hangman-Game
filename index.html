@@ -15,6 +15,7 @@
             --neutral-btn: #818384;
             --disabled-btn: #3a3a3c;
             --border-color: #3a3a3c;
+            --input-bg: #2c2c2e;
         }
 
         * {
@@ -22,6 +23,7 @@
             padding: 0;
             box-sizing: border-box;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            user-select: none; /* Prevent text selection for game feel */
         }
 
         body {
@@ -46,15 +48,22 @@
             gap: 1.5rem;
             position: relative;
             overflow: hidden;
+            transition: height 0.3s ease;
         }
 
-        /* --- Header & Scoreboard --- */
+        /* --- Header & Controls --- */
         header {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1rem;
+        }
+
+        .header-top {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 1rem;
         }
 
         h1 {
@@ -76,6 +85,41 @@
             margin-left: 5px;
         }
 
+        .controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--input-bg);
+            padding: 5px 10px;
+            border-radius: 8px;
+        }
+
+        label {
+            font-size: 0.8rem;
+            color: #b0b0b0;
+            font-weight: 600;
+        }
+
+        select {
+            background: transparent;
+            border: none;
+            color: var(--text-color);
+            font-size: 0.9rem;
+            cursor: pointer;
+            outline: none;
+            font-weight: bold;
+        }
+
+        select option {
+            background-color: var(--container-bg);
+        }
+
         /* --- Main Game Area --- */
         .game-area {
             display: flex;
@@ -86,8 +130,8 @@
 
         /* Hangman SVG Styling */
         .hangman-drawing {
-            height: 200px;
-            width: 200px;
+            height: 180px;
+            width: 180px;
         }
 
         .hangman-part {
@@ -97,6 +141,7 @@
             stroke-linecap: round;
             stroke-linejoin: round;
             display: none; /* Hidden by default */
+            filter: drop-shadow(0 0 2px rgba(255,255,255,0.3));
         }
 
         .gallows {
@@ -110,13 +155,13 @@
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 10px;
+            gap: 12px;
             min-height: 50px;
         }
 
         .letter-slot {
-            width: 40px;
-            height: 50px;
+            width: 45px;
+            height: 55px;
             border-bottom: 3px solid var(--neutral-btn);
             display: flex;
             justify-content: center;
@@ -124,11 +169,12 @@
             font-size: 2rem;
             font-weight: bold;
             text-transform: uppercase;
+            transition: all 0.3s ease;
         }
 
         .letter-slot.revealed {
-            border-bottom-color: var(--text-color);
-            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border-bottom-color: var(--accent-color);
+            animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
 
         /* --- Keyboard --- */
@@ -144,35 +190,46 @@
             background-color: var(--neutral-btn);
             border: none;
             color: white;
-            padding: 12px 16px;
+            padding: 12px 14px;
             border-radius: 6px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.1s ease;
             font-size: 1rem;
-            min-width: 45px;
+            min-width: 40px;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.2);
+            position: relative;
+            top: 0;
+        }
+
+        .key-btn:active {
+            box-shadow: 0 0 0 rgba(0,0,0,0.2);
+            top: 4px;
         }
 
         .key-btn:hover:not(:disabled) {
             background-color: #6e6f70;
-            transform: translateY(-2px);
         }
 
         .key-btn.correct {
             background-color: var(--accent-color);
+            box-shadow: none;
+            top: 4px;
             pointer-events: none;
         }
 
         .key-btn.wrong {
             background-color: var(--disabled-btn);
             opacity: 0.5;
+            box-shadow: none;
+            top: 4px;
             pointer-events: none;
         }
 
         /* --- Status Message & Overlay --- */
         .message-area {
             text-align: center;
-            min-height: 60px;
+            min-height: 70px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -184,11 +241,13 @@
             font-size: 1.2rem;
             font-weight: bold;
             opacity: 0;
-            transition: opacity 0.3s;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
         }
 
         .game-message.visible {
             opacity: 1;
+            transform: translateY(0);
         }
 
         .game-message.win { color: var(--accent-color); }
@@ -198,29 +257,48 @@
             background-color: var(--text-color);
             color: var(--bg-color);
             border: none;
-            padding: 10px 20px;
-            border-radius: 20px;
+            padding: 12px 24px;
+            border-radius: 25px;
             font-weight: bold;
+            font-size: 1rem;
             cursor: pointer;
-            display: none; /* Hidden until game ends */
-            transition: transform 0.2s;
+            display: none;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
 
         .play-again-btn:hover {
             transform: scale(1.05);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.4);
         }
 
         /* Animations */
         @keyframes popIn {
-            0% { transform: scale(0.5); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
+            0% { transform: scale(0.5) translateY(10px); opacity: 0; }
+            60% { transform: scale(1.1) translateY(-5px); opacity: 1; }
+            100% { transform: scale(1) translateY(0); opacity: 1; }
         }
 
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-5px); }
+            40% { transform: translateX(5px); }
+            60% { transform: translateX(-3px); }
+            80% { transform: translateX(3px); }
+        }
+
+        .shake {
+            animation: shake 0.4s ease-in-out;
+        }
+
+        /* Responsive */
         @media (max-width: 600px) {
-            .game-container { padding: 1rem; }
-            .hangman-drawing { height: 150px; width: 150px; }
-            .letter-slot { width: 30px; font-size: 1.5rem; }
-            .key-btn { padding: 10px 12px; min-width: 35px; font-size: 0.9rem; }
+            .game-container { padding: 1rem; gap: 1rem; }
+            .hangman-drawing { height: 140px; width: 140px; }
+            .letter-slot { width: 32px; height: 45px; font-size: 1.5rem; }
+            .key-btn { padding: 10px 10px; min-width: 32px; font-size: 0.9rem; }
+            .header-top { flex-direction: column; align-items: flex-start; gap: 10px; }
+            .controls { width: 100%; justify-content: space-between; }
         }
     </style>
 </head>
@@ -228,38 +306,52 @@
 
     <div class="game-container">
         <header>
-            <h1>WORD GUESS</h1>
-            <div class="scoreboard">
-                <div class="score-item">Wins: <span id="wins">0</span></div>
-                <div class="score-item">Losses: <span id="losses">0</span></div>
+            <div class="header-top">
+                <h1>WORD GUESS</h1>
+                <div class="scoreboard">
+                    <div class="score-item">Wins: <span id="wins">0</span></div>
+                    <div class="score-item">Losses: <span id="losses">0</span></div>
+                </div>
+            </div>
+            
+            <div class="controls">
+                <div class="control-group">
+                    <label for="category-select">Topic:</label>
+                    <select id="category-select">
+                        <option value="ANIMALS">Animals</option>
+                        <option value="PROGRAMMING">Code</option>
+                        <option value="COUNTRIES">Countries</option>
+                        <option value="FOOD">Food</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label for="difficulty-select">Level:</label>
+                    <select id="difficulty-select">
+                        <option value="EASY">Easy</option>
+                        <option value="MEDIUM" selected>Medium</option>
+                        <option value="HARD">Hard</option>
+                    </select>
+                </div>
+                <div class="control-group" style="margin-left: auto;">
+                    <label>Sound:</label>
+                    <input type="checkbox" id="sound-toggle" checked style="accent-color: var(--accent-color); cursor: pointer;">
+                </div>
             </div>
         </header>
 
         <div class="game-area">
             <!-- SVG Hangman -->
             <svg class="hangman-drawing" viewBox="0 0 200 200">
-                <!-- Static Gallows -->
                 <path class="gallows" d="M20,190 L180,190 M50,190 L50,20 L120,20 L120,40" />
-                
-                <!-- Dynamic Parts (Hidden initially) -->
-                <!-- Head -->
                 <circle id="part-0" class="hangman-part" cx="120" cy="60" r="20" />
-                <!-- Body -->
                 <line id="part-1" class="hangman-part" x1="120" y1="80" x2="120" y2="130" />
-                <!-- Left Arm -->
                 <line id="part-2" class="hangman-part" x1="120" y1="100" x2="90" y2="120" />
-                <!-- Right Arm -->
                 <line id="part-3" class="hangman-part" x1="120" y1="100" x2="150" y2="120" />
-                <!-- Left Leg -->
                 <line id="part-4" class="hangman-part" x1="120" y1="130" x2="100" y2="170" />
-                <!-- Right Leg -->
                 <line id="part-5" class="hangman-part" x1="120" y1="130" x2="140" y2="170" />
             </svg>
 
-            <!-- Word Placeholders -->
-            <div id="word-display" class="word-display">
-                <!-- Dynamically populated -->
-            </div>
+            <div id="word-display" class="word-display"></div>
         </div>
 
         <div class="message-area">
@@ -267,47 +359,155 @@
             <button id="play-again-btn" class="play-again-btn">Play Again</button>
         </div>
 
-        <!-- Virtual Keyboard -->
-        <div id="keyboard" class="keyboard">
-            <!-- Dynamically populated -->
-        </div>
+        <div id="keyboard" class="keyboard"></div>
     </div>
 
     <script>
         /**
-         * Word Guess Game Logic
+         * Word Guess Game - Enhanced
+         * Features: Sound synthesis, LocalStorage, Categories, Difficulty, Animations
          */
 
-        // Game Configuration
-        const MAX_LIVES = 6;
-        const WORDS = [
-            "JAVASCRIPT", "PYTHON", "DEVELOPER", "INTERFACE", "BROWSER", 
-            "VARIABLE", "FUNCTION", "COMPONENT", "FRAMEWORK", "DATABASE",
-            "ALGORITHM", "DEBUGGER", "COMPILE", "SYNTAX", "BOOLEAN",
-            "PROMISE", "ASYNC", "ELEMENT", "ATTRIBUTE", "LISTENER"
-        ];
+        // --- Data ---
+        const WORD_DATA = {
+            ANIMALS: {
+                EASY: ["CAT", "DOG", "LION", "BEAR", "DUCK", "FISH", "BIRD", "FROG"],
+                MEDIUM: ["TIGER", "ZEBRA", "MONKEY", "RABBIT", "PANDA", "EAGLE", "SHARK", "HORSE"],
+                HARD: ["ELEPHANT", "GIRAFFE", "KANGAROO", "CROCODILE", "HIPPO", "PLATYPUS", "SQUIRREL"]
+            },
+            PROGRAMMING: {
+                EASY: ["CODE", "JAVA", "HTML", "CSS", "NODE", "API", "GIT", "BUG"],
+                MEDIUM: ["PYTHON", "REACT", "ANGULAR", "SYNTAX", "SERVER", "CLIENT", "SCRIPT", "DEBUG"],
+                HARD: ["JAVASCRIPT", "ALGORITHM", "DATABASE", "FRAMEWORK", "COMPILER", "INTERFACE", "VARIABLE"]
+            },
+            COUNTRIES: {
+                EASY: ["USA", "UK", "CHINA", "INDIA", "PERU", "CUBA", "IRAN", "FIJI"],
+                MEDIUM: ["FRANCE", "SPAIN", "BRAZIL", "CANADA", "JAPAN", "EGYPT", "ITALY", "CHILE"],
+                HARD: ["AUSTRALIA", "ARGENTINA", "GERMANY", "THAILAND", "INDONESIA", "PORTUGAL", "VENEZUELA"]
+            },
+            FOOD: {
+                EASY: ["PIE", "CAKE", "SOUP", "EGG", "BEEF", "CORN", "RICE", "BUN"],
+                MEDIUM: ["PIZZA", "BURGER", "SALAD", "STEAK", "PASTA", "SUSHI", "CURRY", "TACO"],
+                HARD: ["SPAGHETTI", "CROISSANT", "SANDWICH", "CHOCOLATE", "BURRITO", "DUMPLING", "PANCAKE"]
+            }
+        };
 
-        // State Variables
+        const MAX_LIVES = 6;
+
+        // --- State ---
         let currentWord = "";
         let guessedLetters = new Set();
         let remainingLives = MAX_LIVES;
-        let wins = 0;
-        let losses = 0;
         let isGameActive = false;
+        let audioCtx = null; // Web Audio API context
 
-        // DOM Elements
+        // LocalStorage Keys
+        const STORAGE_KEY = 'wordGuessStats';
+
+        // --- DOM Elements ---
         const wordDisplayEl = document.getElementById('word-display');
         const keyboardEl = document.getElementById('keyboard');
         const messageEl = document.getElementById('game-message');
         const playAgainBtn = document.getElementById('play-again-btn');
         const winsEl = document.getElementById('wins');
         const lossesEl = document.getElementById('losses');
+        const categorySelect = document.getElementById('category-select');
+        const difficultySelect = document.getElementById('difficulty-select');
+        const soundToggle = document.getElementById('sound-toggle');
+        const gameContainer = document.querySelector('.game-container');
 
-        /**
-         * Initialize the game environment
-         */
+        // --- Audio System (Web Audio API) ---
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        function playTone(freq, type, duration, vol = 0.1) {
+            if (!soundToggle.checked || !audioCtx) return;
+            
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            
+            gainNode.gain.setValueAtTime(vol, audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+
+            osc.start();
+            osc.stop(audioCtx.currentTime + duration);
+        }
+
+        const SFX = {
+            click: () => playTone(600, 'sine', 0.05, 0.05),
+            correct: () => {
+                playTone(880, 'sine', 0.1, 0.1); // A5
+                setTimeout(() => playTone(1108, 'sine', 0.2, 0.1), 100); // C#6
+            },
+            wrong: () => playTone(150, 'sawtooth', 0.3, 0.1),
+            win: () => {
+                [523, 659, 783, 1046].forEach((freq, i) => {
+                    setTimeout(() => playTone(freq, 'triangle', 0.3, 0.1), i * 150);
+                });
+            },
+            lose: () => {
+                playTone(400, 'sawtooth', 0.4, 0.1);
+                setTimeout(() => playTone(300, 'sawtooth', 0.6, 0.1), 300);
+            }
+        };
+
+        // --- Storage Management ---
+        function loadStats() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                const stats = JSON.parse(saved);
+                winsEl.textContent = stats.wins;
+                lossesEl.textContent = stats.losses;
+                return stats;
+            }
+            return { wins: 0, losses: 0 };
+        }
+
+        function saveStats(won) {
+            let stats = loadStats();
+            if (won) stats.wins++;
+            else stats.losses++;
+            
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(stats));
+            winsEl.textContent = stats.wins;
+            lossesEl.textContent = stats.losses;
+        }
+
+        // --- Game Logic ---
+
         function initializeGame() {
             // Generate Keyboard
+            generateKeyboard();
+
+            // Event Listeners
+            playAgainBtn.addEventListener('click', resetGame);
+            document.addEventListener('keydown', handlePhysicalKeypress);
+            
+            // Settings Listeners
+            categorySelect.addEventListener('change', () => { resetGame(); SFX.click(); });
+            difficultySelect.addEventListener('change', () => { resetGame(); SFX.click(); });
+            
+            // Interaction trigger for Audio Context
+            document.body.addEventListener('click', initAudio, { once: true });
+            document.body.addEventListener('keydown', initAudio, { once: true });
+
+            loadStats();
+            resetGame();
+        }
+
+        function generateKeyboard() {
             keyboardEl.innerHTML = '';
             for (let i = 65; i <= 90; i++) {
                 const char = String.fromCharCode(i);
@@ -318,40 +518,33 @@
                 btn.addEventListener('click', () => handleLetterClick(char));
                 keyboardEl.appendChild(btn);
             }
-
-            // Setup Play Again Button
-            playAgainBtn.addEventListener('click', resetGame);
-
-            // Listen for physical keyboard
-            document.addEventListener('keydown', handlePhysicalKeypress);
-
-            // Start first game
-            resetGame();
         }
 
-        /**
-         * Select a random word and start a new round
-         */
+        function selectWord() {
+            const cat = categorySelect.value;
+            const diff = difficultySelect.value;
+            const words = WORD_DATA[cat][diff];
+            return words[Math.floor(Math.random() * words.length)];
+        }
+
         function resetGame() {
-            // Reset State
-            currentWord = selectRandomWord();
+            currentWord = selectWord();
             guessedLetters.clear();
             remainingLives = MAX_LIVES;
             isGameActive = true;
 
             // UI Reset
-            messageEl.textContent = "";
             messageEl.className = "game-message";
+            messageEl.textContent = "";
             playAgainBtn.style.display = "none";
+            gameContainer.classList.remove('shake');
             
-            // Reset Keyboard Buttons
             const buttons = keyboardEl.querySelectorAll('.key-btn');
             buttons.forEach(btn => {
                 btn.disabled = false;
                 btn.className = 'key-btn';
             });
 
-            // Reset Hangman Visuals
             for (let i = 0; i < MAX_LIVES; i++) {
                 document.getElementById(`part-${i}`).style.display = 'none';
             }
@@ -359,134 +552,108 @@
             updateWordDisplay();
         }
 
-        function selectRandomWord() {
-            return WORDS[Math.floor(Math.random() * WORDS.length)];
-        }
-
-        /**
-         * Handle Physical Keyboard Input
-         */
         function handlePhysicalKeypress(e) {
             if (!isGameActive) return;
             const char = e.key.toUpperCase();
-            // Check if it's a letter A-Z
             if (char >= 'A' && char <= 'Z' && char.length === 1) {
-                // Find corresponding button to simulate click (if not already clicked)
                 const btn = document.querySelector(`button[data-letter="${char}"]`);
                 if (btn && !btn.disabled) {
+                    // Visual feedback for keyboard press
+                    btn.style.transform = "translateY(2px)";
+                    setTimeout(() => btn.style.transform = "", 100);
                     handleLetterClick(char);
                 }
             }
         }
 
-        /**
-         * Core Logic: Process a letter guess
-         */
         function handleLetterClick(letter) {
             if (!isGameActive || guessedLetters.has(letter)) return;
 
             guessedLetters.add(letter);
-            
             const btn = document.querySelector(`button[data-letter="${letter}"]`);
             
             if (currentWord.includes(letter)) {
-                // Correct Guess
                 btn.classList.add('correct');
                 btn.disabled = true;
+                SFX.correct();
             } else {
-                // Wrong Guess
                 btn.classList.add('wrong');
                 btn.disabled = true;
                 remainingLives--;
+                SFX.wrong();
                 updateHangmanVisual();
+                gameContainer.classList.remove('shake');
+                void gameContainer.offsetWidth; // trigger reflow
+                gameContainer.classList.add('shake');
             }
 
             updateWordDisplay();
             checkGameStatus();
         }
 
-        /**
-         * Update the visual word blanks
-         */
         function updateWordDisplay() {
             wordDisplayEl.innerHTML = '';
-            
-            const wordArr = currentWord.split('');
-            wordArr.forEach(letter => {
+            currentWord.split('').forEach((letter, index) => {
                 const letterSpan = document.createElement('div');
                 letterSpan.classList.add('letter-slot');
                 
+                // Add delay for nice ripple effect on reveal
+                letterSpan.style.animationDelay = `${index * 50}ms`;
+
                 if (guessedLetters.has(letter) || !isGameActive) {
                     letterSpan.textContent = letter;
-                    // Only add revealed class during active game for animation
-                    if(guessedLetters.has(letter)) letterSpan.classList.add('revealed');
-                    // If game ended and letter wasn't guessed, show it (optional styling)
+                    if(guessedLetters.has(letter)) {
+                        letterSpan.classList.add('revealed');
+                    }
                     if(!isGameActive && !guessedLetters.has(letter)) {
                         letterSpan.style.color = 'var(--wrong-color)';
                         letterSpan.textContent = letter;
+                        letterSpan.style.opacity = '0.7';
                     }
-                } else {
-                    letterSpan.textContent = "";
                 }
-                
                 wordDisplayEl.appendChild(letterSpan);
             });
         }
 
-        /**
-         * Update the SVG Hangman drawing based on remaining lives
-         */
         function updateHangmanVisual() {
-            // Lives start at 6. If lives = 5, show part 0. If lives = 4, show part 1...
             const partIndex = MAX_LIVES - remainingLives - 1;
             if (partIndex >= 0 && partIndex < MAX_LIVES) {
                 const part = document.getElementById(`part-${partIndex}`);
-                if (part) part.style.display = 'block';
+                if (part) {
+                    part.style.display = 'block';
+                    // Simple animation for the new part
+                    part.style.opacity = 0;
+                    setTimeout(() => part.style.opacity = 1, 50);
+                }
             }
         }
 
-        /**
-         * Check for Win/Loss conditions
-         */
         function checkGameStatus() {
-            // Check Win
             const isWon = currentWord.split('').every(char => guessedLetters.has(char));
-            
-            if (isWon) {
-                endGame(true);
-                return;
-            }
-
-            // Check Loss
-            if (remainingLives === 0) {
-                endGame(false);
-            }
+            if (isWon) endGame(true);
+            else if (remainingLives === 0) endGame(false);
         }
 
-        /**
-         * Handle End Game
-         */
         function endGame(won) {
             isGameActive = false;
-            
+            saveStats(won);
+
             if (won) {
-                wins++;
-                winsEl.textContent = wins;
-                messageEl.textContent = "🎉 You Won! Great job!";
+                messageEl.textContent = "🎉 Excellent! You found the word!";
                 messageEl.classList.add('win', 'visible');
+                SFX.win();
             } else {
-                losses++;
-                lossesEl.textContent = losses;
                 messageEl.textContent = `💀 Game Over! The word was ${currentWord}`;
                 messageEl.classList.add('lose', 'visible');
-                // Reveal the word
-                updateWordDisplay();
+                SFX.lose();
+                updateWordDisplay(); // Reveal missed letters
             }
-
             playAgainBtn.style.display = "block";
+            // Disable all keys
+            Array.from(keyboardEl.children).forEach(btn => btn.disabled = true);
         }
 
-        // Boot the game
+        // Start
         initializeGame();
 
     </script>
